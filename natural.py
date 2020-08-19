@@ -79,6 +79,7 @@ class Hand:
                 else:
                     self.value += 10
 
+
         for item in aces:
             if has_ace and self.value > 21:
                 self.value -= 10
@@ -105,27 +106,24 @@ class Hand:
 
     def display_dealer(self):
         '''Normal display for non hidden cards'''
-        for i in range(len(self.cards)):
-            print("+---+ ", end="")
 
+        print("+---+ " * len(self.cards), end="")
         print()
-        for i in range(len(self.cards)):
-            card = self.cards[i]
+        for card in self.cards:
             print("|{}  | ".format(card.suit), end="")
 
         print()
-        for i in range(len(self.cards)):
-            card = self.cards[i]
+        for card in self.cards:
             print("| {} | ".format(card.value), end="")
 
+
         print()
-        for i in range(len(self.cards)):
-            card = self.cards[i]
+        for card in self.cards:
             print("|  {}| ".format(card.suit), end="")
 
         print()
-        for i in range(len(self.cards)):
-            print("+---+ ", end="")
+        print("+---+ " * len(self.cards), end="")
+
         print("\nValue:", self.get_value())
 
 
