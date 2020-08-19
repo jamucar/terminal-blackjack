@@ -32,8 +32,7 @@ class Deck:
 
     def shuffle(self):
         '''shuffle the card deck'''
-        if len(self.cards) > 1:
-            random.shuffle(self.cards)
+        random.shuffle(self.cards)
 
     def cards_left(self):
         '''returns cards left in deck as int'''
@@ -68,18 +67,21 @@ class Hand:
         '''calculates the value of the hand'''
         self.value = 0
         has_ace = False
+        aces = []
         for card in self.cards:
             if card.value.isnumeric():
                 self.value += int(card.value)
             else:
                 if card.value == "A":
                     has_ace = True
+                    aces.append("a")
                     self.value += 11
                 else:
                     self.value += 10
 
-        if has_ace and self.value > 21:
-            self.value -= 10
+        for item in aces:
+            if has_ace and self.value > 21:
+                self.value -= 10
 
 
     def get_cards(self):
