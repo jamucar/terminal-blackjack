@@ -83,16 +83,11 @@ class Hand:
         for item in aces:
             if has_ace and self.value > 21:
                 self.value -= 10
-
+        return self.value
 
     def get_cards(self):
         return self.cards
 
-
-    def get_value(self):
-        '''calls calculate_value and returns the hand value'''
-        self.calculate_value()
-        return self.value
 
 
     def display(self):
@@ -124,7 +119,7 @@ class Hand:
         print()
         print("+---+ " * len(self.cards), end="")
 
-        print("\nValue:", self.get_value())
+        print("\nValue:", self.calculate_value())
 
 
 class Bankroll:
@@ -182,7 +177,7 @@ class Bet:
         self.min = 50
         self.amount = self.min
 
-    def get_bet(self):
+    def get_amount(self):
         '''returns bet amount'''
         return self.amount
 
@@ -253,7 +248,7 @@ class Game:
 
 
     def hit_stick_double(self, bet, hand, hit = False):
-        while hand.get_value() < 21:
+        while hand.calculate_value() < 21:
             if hit:
                 choice = self.choice(h = True)
                 if choice in ['hit', 'h']:
@@ -287,11 +282,11 @@ class Game:
             self.hand_1 = Hand()
             self.bet_1 = Bet()
             self.hand_1.add_card(card = cards[0])
-            self.bet_1.create(self.bet.get_bet())
+            self.bet_1.create(self.bet.get_amount())
             self.hand_2 = Hand()
             self.bet_2 = Bet()
             self.hand_2.add_card(card = cards[1])
-            self.bet_2.create(self.bet.get_bet())
+            self.bet_2.create(self.bet.get_amount())
             self.print_game()
             self.hand_1.add_card(self.deck.deal())
             self.hand_2.add_card(self.deck.deal())
@@ -353,7 +348,7 @@ class Game:
         will raise on 50 dollar intervals,
         will keep asking until he settles for ammount or reaches table limit which is 1000'''
 
-        money = self.bet.get_bet()
+        money = self.bet.get_amount()
         while money < 1000:
             self.print_game()
             print(f"Your bankroll is {self.bankroll} $")
@@ -378,7 +373,7 @@ class Game:
     def dealer_turn(self):
         '''Dealer allways hits untill 17'''
         self.print_game(dealer = True)
-        while self.dealer_hand.get_value() < 17:
+        while self.dealer_hand.calculate_value() < 17:
             self.dealer_hand.add_card(self.deck.deal())
             self.print_game(dealer = True)
             if self.player_is_over(dealer = True):
@@ -395,15 +390,15 @@ class Game:
         '''
 
         if self.split:
-            dealer_hand_value = self.dealer_hand.get_value()
-            values = [[self.bet_1.get_bet() , self.bet_2.get_bet()] , [self.hand_1.get_value(), self.hand_2.get_value()]]
+            dealer_hand_value = self.dealer_hand.calculate_value()
+            values = [[self.bet_1.get_amount() , self.bet_2.get_amount()] , [self.hand_1.calculate_value(), self.hand_2.calculate_value()]]
             self.print_game()
             self.get_winner(dealer_hand_value, values)
 
         else:
-            player_hand_value = self.player_hand.get_value()
-            dealer_hand_value = self.dealer_hand.get_value()
-            bet = self.bet.get_bet()
+            player_hand_value = self.player_hand.calculate_value()
+            dealer_hand_value = self.dealer_hand.calculate_value()
+            bet = self.bet.get_amount()
             values =[[bet],[player_hand_value]]
             self.get_winner(dealer_hand_value, values)
 
@@ -461,8 +456,8 @@ class Game:
         '''
         time.sleep(0.5)
         self.clear()
-        width, height = os.get_terminal_size()
-    #    print_header()
+
+
         self.header()
         self.dealer = dealer
         print("\n---DEALER---")
@@ -477,16 +472,16 @@ class Game:
         if self.split:
             print("First Hand")
             self.hand_1.display()
-            print ('*'* self.bet_1.get_bet())
+            print ('*'* self.bet_1.get_amount())
             print("Second Hand")
             self.hand_2.display()
-            print ('*'* self.bet_2.get_bet())
+            print ('*'* self.bet_2.get_amount())
 
 
         else:
             self.player_hand.display()
             self.bet.display_bet()
-            print("*"* self.bet.get_bet())
+            print("*"* self.bet.get_amount())
 
 
 
@@ -495,9 +490,9 @@ class Game:
         self.dealer = dealer
 
         if self.dealer:
-            return self.dealer_hand.get_value() > 21
+            return self.dealer_hand.calculate_value() > 21
 
-        return self.player_hand.get_value() > 21
+        return self.player_hand.calculate_value() > 21
 
 
     def close(self):
@@ -509,7 +504,7 @@ class Game:
             writer = csv.writer(file)
             writer.writerow([datetime.datetime.now(), self.hands_won, self.hands_lost, self.bankroll])
         with open('data.csv', 'r') as file:
-            reader = csv.reader(file)
+
             csv_file = csv.DictReader(file)
             rows = list(csv_file)
             wins = []
